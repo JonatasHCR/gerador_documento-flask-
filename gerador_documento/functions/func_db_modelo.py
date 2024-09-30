@@ -22,7 +22,8 @@ def criar_banco():
             'name TEXT UNIQUE NOT NULL,'
             'variaveis TEXT,'
             'ref_variaveis TEXT,'
-            'default_variaveis TEXT'
+            'default_variaveis TEXT,'
+            'caminho_saida TEXT'
             ')'
         )
         connection.commit()
@@ -31,7 +32,7 @@ def criar_banco():
         cursor.close()
         connection.close()
 
-def inserir(nome,dados,ref_dados,default_var):
+def inserir(nome,dados,ref_dados,default_var,caminho_saida):
     '''função para inserir os dados no banco'''
     try:
         criar_banco()
@@ -42,8 +43,8 @@ def inserir(nome,dados,ref_dados,default_var):
         lista_convert_defal = json.dumps(default_var) 
 
         cursor.execute('''
-        INSERT INTO modelos (name,variaveis,ref_variaveis,default_variaveis) VALUES (?,?,?,?)
-    ''', (nome, lista_convert_dados,lista_convert_ref,lista_convert_defal,)
+        INSERT INTO modelos (name,variaveis,ref_variaveis,default_variaveis,caminho_saida) VALUES (?,?,?,?,?)
+    ''', (nome, lista_convert_dados,lista_convert_ref,lista_convert_defal,caminho_saida)
         )
         connection.commit()
         gerando_modelo(nome)
@@ -64,11 +65,12 @@ def retirar_dados(id_modelo):
             variavel = json.loads(var[2])
             ref_variavel = json.loads(var[3])
             defal_var = json.loads(var[4])
-        return (modelo_id,nome,variavel,ref_variavel,defal_var)
+            caminho_saida = var[5]
+        return (modelo_id,nome,variavel,ref_variavel,defal_var,caminho_saida)
     finally:
         cursor.close()
         connection.close()
-def modificar(id,dados,ref_dados,default_var,nome_novo):
+def modificar(id,dados,ref_dados,default_var,nome_novo,caminho_saida):
     '''Função para editar os dados do modelo no banco'''
     try:
         connection = sqlite3.connect(DB_FILE)
@@ -78,9 +80,9 @@ def modificar(id,dados,ref_dados,default_var,nome_novo):
         lista_convert_defal = json.dumps(default_var)
         cursor.execute('''
         UPDATE modelos
-        SET default_variaveis = ?, ref_variaveis = ?, variaveis = ?, name = ?
+        SET default_variaveis = ?, ref_variaveis = ?, variaveis = ?, name = ?, caminho_saida = ?
         WHERE id = ?;
-    ''', (lista_convert_defal,lista_convert_ref,lista_convert_dados,nome_novo,id)
+    ''', (lista_convert_defal,lista_convert_ref,lista_convert_dados,nome_novo,caminho_saida,id)
         )
         connection.commit()
     finally:

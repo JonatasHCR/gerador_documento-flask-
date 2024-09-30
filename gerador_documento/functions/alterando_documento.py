@@ -21,18 +21,18 @@ def substituindo_texto(paragraph, subst_text_list: list):
                 if old_text[0] in item.text:
                     item.text = item.text.replace(old_text[0], new_text)
 
-def gerando_documento(variables_values: list, caminho_modelo):
+def gerando_documento(variables_values: list):
     for tuplas in variables_values:
         match tuplas[0]:
             case 'NOME_MODELO':
-                path_file_model = tuplas[1].strip()
+                arquivo_modelo = tuplas[1].strip()
             case 'CAMINHO_SAIDA':
                 caminho_saida = tuplas[1]
             case 'ARQUIVO_SAIDA':
-                path_file_save = tuplas[1].strip() + '.doc'
+                nome_do_arquivo = tuplas[1].strip() + '.doc'
         continue
-    caminho_modelo = caminho_modelo / path_file_model
-    caminho_saida = f'{caminho_saida}\\{path_file_save}'
+    caminho_modelo = CAMINHO_MODELO / arquivo_modelo
+    caminho_saida = f'{caminho_saida}\\{nome_do_arquivo}'
     try:#ainda em processo de ajeitar para melhorar o except
         doc = docx.Document(caminho_modelo)
         for linha in doc.paragraphs:
@@ -44,6 +44,7 @@ def gerando_documento(variables_values: list, caminho_modelo):
         #em processo de criação vou melhorar os erros)
 
 def gerando_modelo(nome_modelo):
+    nome_modelo = nome_modelo + '.doc'
     caminho_modelo = CAMINHO_MODELO / nome_modelo
     doc = docx.Document()
     doc.save(caminho_modelo)

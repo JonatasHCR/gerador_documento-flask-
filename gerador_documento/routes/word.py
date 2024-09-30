@@ -9,6 +9,7 @@ Rota de Word
     -/word/ (GET) - Listar os modelos Words
     -/word/ (POST) - Inserir um modelo word no servidor
     -/word/<id> (GET) - Renderizar um formulário usar o modelo
+    -/word/<id> (POST) - Receber os dados e usar o modelo
     -/word/<id>/edit (GET) - Renderizar um formulário para editar um modelo word
     -/word/<id>/delete (GET) - Deleta o registro do usuário 
 '''
@@ -16,9 +17,13 @@ Rota de Word
 @word_route.route('/')
 def listar_modelos_word():
     '''Listar os Modelos no banco de dados'''
-    from functions.func_db_modelo import listar
+    from sqlite3 import OperationalError
 
-    modelos = listar()
+    from functions.func_db_modelo import listar
+    try:
+        modelos = listar()
+    except OperationalError:
+        return render_template('word/listar_modelos.html', mensagem_error='Você ainda nao criou um modelo')
     return render_template('word/listar_modelos.html', modelos_word=modelos)
 
 @word_route.route('/novo_modelo', methods=['POST', 'GET'])
@@ -45,8 +50,9 @@ def form_modelo_word():
         variaveis = request.values.getlist('variavel')
         ref_variaveis = request.values.getlist('ref_variavel')
         default_variaveis = request.values.getlist('default_variavel')
+        caminho_saida = request.values.get('caminho_saida')
         try:
-            inserir(nome,variaveis,ref_variaveis,default_variaveis)
+            inserir(nome,variaveis,ref_variaveis,default_variaveis,caminho_saida)
         except IntegrityError:
             return render_template('word/form_criar_modelo.html', mensagem_error='Já existe um modelo com esse nome')
     return render_template('word/form_criar_modelo.html')
@@ -58,14 +64,19 @@ def modelo_word(modelo_id):
     
     dados = retirar_dados(modelo_id)
     combinadas = [{'variavel': dados[2][i], 'ref_variavel': dados[3][i], 'defal_variavel': dados[4][i]} for i in range(len(dados[2]))]
-    return render_template('word/form_modelo.html', dados_modelo=combinadas, id_modelo=dados[0], nome_modelo=dados[1])
+    return render_template('word/form_modelo.html', dados_modelo=combinadas, id_modelo=dados[0], nome_modelo=dados[1], caminho_saida=dados[5])
 
 
 @word_route.route('/<int:modelo_id>', methods=['POST'])
 def form_dados_word(modelo_id):
     '''Recebendo dados do formulário do modelo'''
-    print(request.values)
-    return render_template('word/form_modelo.html', modelo_word=MODELOS, id_modelo=modelo_id, nome_modelo='teste')
+    from functions.formatando_dados import FormatAll
+    from functions.alterando_documento import gerando_documento
+
+    dados_formatados = FormatAll(request.values.items())
+    gerando_documento(dados_formatados.dados_dict.items())
+
+    return modelo_word(modelo_id)
 
 @word_route.route('/<int:modelo_id>/edit')
 def modelo_word_edit(modelo_id):

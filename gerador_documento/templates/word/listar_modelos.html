@@ -1,5 +1,5 @@
 {% include "partials/head.html" %}
-
+    {% if not mensagem_error %}
     <table class="table caption-top">
         <caption>Lista de Modelos</caption>
         <thead align="center">
@@ -21,6 +21,16 @@
             {% endfor %}
         </tbody>
     </table>
+    {% else %}
+    <div></div>
+        <div class="alert alert-danger d-flex align-items-center" role="alert">
+            <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+            <div>
+                {{mensagem_error}}
+            </div>
+        </div>
+    </div>
+    {% endif %}
 
 
 {% include "partials/fim.html" %}
