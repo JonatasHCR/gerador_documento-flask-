@@ -1,0 +1,26 @@
+{% include "partials/head.html" %}
+
+    <table class="table caption-top">
+        <caption>Lista de Modelos</caption>
+        <thead align="center">
+        <tr>
+            <th scope="col">Nome</th>
+            <th scope="col">Ações</th>
+        </tr>
+        </thead>
+        <tbody align="center">
+            {% for modelo in modelos_word %}
+                <tr>
+                    <th scope="row">{{modelo.nome}}</th>
+                    <td>
+                        <a href="{{ url_for('word.modelo_word',modelo_id=modelo.id) }}" class="btn btn-dark">Usar</a>
+                        <a href="{{ url_for('word.modelo_word_edit',modelo_id=modelo.id) }}" class="btn btn-light">Editar</a>
+                        <a href="{{ url_for('word.modelo_word_delete',modelo_id=modelo.id) }}" class="btn btn-danger">Deletar</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+
+{% include "partials/fim.html" %}

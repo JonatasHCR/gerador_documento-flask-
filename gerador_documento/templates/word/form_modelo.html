@@ -1,0 +1,41 @@
+{% include "partials/head.html" %}
+
+{% if not mensagem_error %}
+<form action="{{ url_for('word.form_dados_word', modelo_id = id_modelo)}}" method="post">
+    <div class="mb-3 row">
+        <label for="staticEmail" class="col-sm-2 col-form-label">Modelo</label>
+        <div class="col-sm-10">
+          <input type="text" readonly class="form-control-plaintext" name="nome_modelo" id="staticEmail" value= {{nome_modelo}}>
+        </div>
+    </div>
+    {% for dados in dados_modelo %}
+    <div class="input-group mb-3">
+        <label for="staticEmail" class="col-sm-2 col-form-label">{{dados.ref_variavel}}</label>
+        <input type="text" class="form-control" name={{dados.variavel}} value='{{dados.defal_variavel}}' aria-label="Text input with checkbox">
+    </div>
+    
+    {% endfor %}
+    <div class="input-group mb-3">
+      <label for="staticEmail" class="col-sm-2 col-form-label">Caminho de Saída</label>
+      <input type="text" class="form-control" name="caminho_saida" aria-label="Text input with checkbox">
+  </div>
+  <div class="input-group mb-3">
+    <label for="staticEmail" class="col-sm-2 col-form-label">Nome do Arquivo</label>
+    <input type="text" class="form-control" name="arquivo_saida" aria-label="Text input with checkbox">
+</div>
+    <div>
+        <button type="submit" class="btn btn-dark">Enviar</button>
+    </div>
+</form>
+{% else %}
+    <div>
+        <div class="alert alert-danger d-flex align-items-center" role="alert">
+            <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+            <div>
+                {{mensagem_error}}
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+{% include "partials/fim.html" %}

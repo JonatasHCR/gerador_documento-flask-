@@ -1,0 +1,5 @@
+__pycache__
+venv
+modelos.sqlite3
+banco.py
+*.doc

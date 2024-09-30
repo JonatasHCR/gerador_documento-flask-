@@ -1,0 +1,1 @@
+Aqui sera a pasta que tera seus modelos, mas nao coloque modelos aqui, use a aplicação, ela criara um documento em branco aqui e depois e so copiar e colar nele(essa medida é por que tem documentos words que a biblioteca nao consegue ler motivo desconhecido então pra evitar foi criada uma função que gera um documento em branco)
