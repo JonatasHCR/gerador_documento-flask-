@@ -33,18 +33,15 @@ def gerando_documento(variables_values: list):
         continue
     caminho_modelo = CAMINHO_MODELO / arquivo_modelo
     caminho_saida = f'{caminho_saida}\\{nome_do_arquivo}'
-    try:#ainda em processo de ajeitar para melhorar o except
-        doc = docx.Document(caminho_modelo)
-        for linha in doc.paragraphs:
-                substituindo_texto(linha,variables_values)
+#ainda em processo de ajeitar para melhorar o except
+    doc = docx.Document(caminho_modelo)
+    for linha in doc.paragraphs:
+            substituindo_texto(linha,variables_values)
         #depois de tudo ele usa o caminho de saída fornecido pelo usuário
-        doc.save(caminho_saida)
-    except:
-        print('Não foi possível salvar o arquivo')#caso de erro(lembrando ta 
-        #em processo de criação vou melhorar os erros)
+    doc.save(caminho_saida)
 
 def gerando_modelo(nome_modelo):
-    nome_modelo = nome_modelo + '.doc'
+    nome_modelo = nome_modelo
     caminho_modelo = CAMINHO_MODELO / nome_modelo
     doc = docx.Document()
     doc.save(caminho_modelo)

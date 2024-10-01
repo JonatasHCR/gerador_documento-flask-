@@ -23,7 +23,8 @@ def criar_banco():
             'variaveis TEXT,'
             'ref_variaveis TEXT,'
             'default_variaveis TEXT,'
-            'caminho_saida TEXT'
+            'caminho_saida TEXT,'
+            'arquivo_saida TEXT'
             ')'
         )
         connection.commit()
@@ -32,7 +33,7 @@ def criar_banco():
         cursor.close()
         connection.close()
 
-def inserir(nome,dados,ref_dados,default_var,caminho_saida):
+def inserir(nome,dados,ref_dados,default_var,caminho_saida,arquivo_saida):
     '''função para inserir os dados no banco'''
     try:
         criar_banco()
@@ -43,8 +44,8 @@ def inserir(nome,dados,ref_dados,default_var,caminho_saida):
         lista_convert_defal = json.dumps(default_var) 
 
         cursor.execute('''
-        INSERT INTO modelos (name,variaveis,ref_variaveis,default_variaveis,caminho_saida) VALUES (?,?,?,?,?)
-    ''', (nome, lista_convert_dados,lista_convert_ref,lista_convert_defal,caminho_saida)
+        INSERT INTO modelos (name,variaveis,ref_variaveis,default_variaveis,caminho_saida,arquivo_saida) VALUES (?,?,?,?,?,?)
+    ''', (nome, lista_convert_dados,lista_convert_ref,lista_convert_defal,caminho_saida,arquivo_saida)
         )
         connection.commit()
         gerando_modelo(nome)
@@ -66,11 +67,12 @@ def retirar_dados(id_modelo):
             ref_variavel = json.loads(var[3])
             defal_var = json.loads(var[4])
             caminho_saida = var[5]
-        return (modelo_id,nome,variavel,ref_variavel,defal_var,caminho_saida)
+            arquivo_saida = var[6]
+        return (modelo_id,nome,variavel,ref_variavel,defal_var,caminho_saida,arquivo_saida)
     finally:
         cursor.close()
         connection.close()
-def modificar(id,dados,ref_dados,default_var,nome_novo,caminho_saida):
+def modificar(id,dados,ref_dados,default_var,nome_novo,caminho_saida,arquivo_saida):
     '''Função para editar os dados do modelo no banco'''
     try:
         connection = sqlite3.connect(DB_FILE)
@@ -80,9 +82,9 @@ def modificar(id,dados,ref_dados,default_var,nome_novo,caminho_saida):
         lista_convert_defal = json.dumps(default_var)
         cursor.execute('''
         UPDATE modelos
-        SET default_variaveis = ?, ref_variaveis = ?, variaveis = ?, name = ?, caminho_saida = ?
+        SET default_variaveis = ?, ref_variaveis = ?, variaveis = ?, name = ?, caminho_saida = ?, arquivo_saida = ?
         WHERE id = ?;
-    ''', (lista_convert_defal,lista_convert_ref,lista_convert_dados,nome_novo,caminho_saida,id)
+    ''', (lista_convert_defal,lista_convert_ref,lista_convert_dados,nome_novo,caminho_saida,arquivo_saida,id)
         )
         connection.commit()
     finally:

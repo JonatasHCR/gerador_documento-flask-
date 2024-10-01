@@ -1,5 +1,39 @@
 {% include "partials/head.html" %}
-{% if mensagem_error or not quant_var %}
+{% if dados_modelo %}
+<div class="input-group">
+{% for dados in dados_modelo %}
+<div id="input-container" class="row">
+    <label for="staticEmail" class="col-sm-2 col-form-label">Variavel:</label>
+    <div class="col">
+      <input type="text" class="form-control" name="variavel" value='{{dados.variavel}}' placeholder="Nome da Variavel" aria-label="Nome da Variavel">
+    </div>
+    <div class="col">
+      <input type="text" class="form-control" name="ref_variavel" value='{{dados.ref_variavel}}' placeholder="Referencia da Variavel" aria-label="Referencia da Variavel">
+    </div>
+    <div class="col">
+        <input type="text" class="form-control" name="default_variavel" value='{{dados.defal_variavel}}' placeholder="Valor Padrão da Variavel" aria-label="Valor Padrão da Variavel">
+    </div>
+  </div>
+{% endfor %}
+  <div class="input-group">
+
+  </div>
+    <div class="input-group mb-3">
+      <label for="staticEmail" class="col-sm-2 col-form-label">Caminho de Saída</label>
+      <input type="text" class="form-control" value="{{caminho_saida}}" name="caminho_saida" aria-label="Text input with checkbox">
+  </div>
+  <div class="input-group mb-3">
+    <label for="staticEmail" class="col-sm-2 col-form-label">Nome do Arquivo</label>
+    <input type="text" class="form-control" value="{{arquivo_saida}}" name="arquivo_saida" aria-label="Text input with checkbox">
+</div>
+<div>
+<button type="button" onclick="adicionarCampo()">Adicionar Campo</button>
+</div>
+    <div>
+        <button type="submit" class="btn btn-dark">Enviar</button>
+    </div>
+</form>
+{% elif mensagem_error or not quant_var %}
     <div>
         <form action="{{url_for('word.form_modelo_word')}}" method="post">
             <div class="row g-3">
@@ -63,6 +97,10 @@
             <div class="input-group mb-3">
                 <label for="staticEmail" class="col-sm-2 col-form-label">Caminho de Saída:</label>
                 <input type="text" class="form-control" name="caminho_saida" aria-label="Text input with checkbox">
+            </div>
+            <div class="input-group mb-3">
+                <label for="staticEmail" class="col-sm-2 col-form-label">Nome Padrão do Arquivo:</label>
+                <input type="text" class="form-control" name="arquivo_saida" aria-label="Text input with checkbox">
             </div>
             <div>
                 <button type="submit" class="btn btn-dark">Enviar</button>
