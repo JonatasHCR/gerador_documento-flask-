@@ -22,6 +22,8 @@ def listar_modelos_word():
     from functions.func_db_modelo import listar
     try:
         modelos = listar()
+        if modelos == []:
+            raise OperationalError
     except OperationalError:
         return render_template('word/listar_modelos.html', mensagem_error='Você ainda nao criou um modelo')
     return render_template('word/listar_modelos.html', modelos_word=modelos)
@@ -82,20 +84,39 @@ def form_dados_word(modelo_id):
 
     return modelo_word(modelo_id)
 
-@word_route.route('/<int:modelo_id>/edit')
+@word_route.route('/<int:modelo_id>/edit', methods=['POST', 'GET'])
 def modelo_word_edit(modelo_id):
     '''Formulário para editar o modelo'''
-    # import os
+    if request.method == 'POST':
+        from pathlib import Path
+        
+        from functions.func_db_modelo import retirar_dados
 
-    # arquivo_antigo = "arquivo_original.txt"
-    # novo_arquivo = "arquivo_novo.txt"
+        CAMINHO_MODELO = Path(__file__).cwd() / 'gerador_documento' / 'database' / 'modelos'
+        
+        dados = retirar_dados(modelo_id)
+        
+        nome_novo = request.values.get('nome_modelo')
+        variaveis = request.values.getlist('variavel')
+        ref_variaveis = request.values.getlist('ref_variavel')
+        default_variavel = request.values.getlist('default_variavel')
+        caminho_saida = request.values.get('caminho_saida')
+        arquivo_saida = request.values.get('arquivo_saida')
+                
+        from functions.func_db_modelo import modificar
+        
+        modificar(modelo_id,variaveis,ref_variaveis,default_variavel,nome_novo,caminho_saida,arquivo_saida)
+        
+        try:
+            from os import rename
 
-    # # Verifica se o arquivo existe
-    # if os.path.exists(arquivo_antigo):
-    #     os.rename(arquivo_antigo, novo_arquivo)
-    #     print(f"O arquivo foi renomeado de {arquivo_antigo} para {novo_arquivo}.")
-    # else:
-    #     print(f"O arquivo {arquivo_antigo} não existe.")
+            nome_antigo = CAMINHO_MODELO / dados[1]
+            nome_novo = CAMINHO_MODELO / nome_novo
+            # Verifica se o arquivo existe
+            rename(nome_antigo, nome_novo)
+        except UnboundLocalError:
+            return render_template('word/form_criar_modelo.html', mensagem_error='O modelo não existe(não foi possível concluir a operação de renomear)')
+        return listar_modelos_word()
     from functions.func_db_modelo import retirar_dados
     
     dados = retirar_dados(modelo_id)
@@ -105,5 +126,21 @@ def modelo_word_edit(modelo_id):
 @word_route.route('/<int:modelo_id>/delete')
 def modelo_word_delete(modelo_id):
     '''Deletar o modelo'''
-    return render_template('word/form_modelo.html', modelo_word=MODELOS)
+    try:
+        from os import remove
+        from pathlib import Path
+        
+        CAMINHO_MODELO = Path(__file__).cwd() / 'gerador_documento' / 'database' / 'modelos'
+        
+        from functions.func_db_modelo import deletar,retirar_dados
+        
+        dados = retirar_dados(modelo_id)
+        caminho_arquivo = CAMINHO_MODELO / dados[1]
+        deletar(modelo_id)
+        remove(caminho_arquivo)
+    except FileNotFoundError:
+        return render_template('word/listar_modelos.html', mensagem_error='O modelo não existe na pasta modelo(não foi possível concluir a operação de apagar)')
+    except UnboundLocalError:
+        return render_template('word/listar_modelos.html', mensagem_error='O modelo não existe no banco(não foi possível concluir a operação de apagar)')
+    return listar_modelos_word()
 

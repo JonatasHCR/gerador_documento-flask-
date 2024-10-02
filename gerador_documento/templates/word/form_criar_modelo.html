@@ -1,8 +1,13 @@
 {% include "partials/head.html" %}
 {% if dados_modelo %}
-<div class="input-group">
+<form action="{{url_for('word.modelo_word_edit', modelo_id = id_modelo)}}" method="post">
+<div id="input-container" class="input-group">
+    <div class="input-group mb-3">
+        <label for="staticEmail" class="col-sm-2 col-form-label">Modelo</label>
+            <input type="text" class="form-control" name="nome_modelo" value="{{nome_modelo}}">
+    </div>
 {% for dados in dados_modelo %}
-<div id="input-container" class="row">
+<div class="row">
     <label for="staticEmail" class="col-sm-2 col-form-label">Variavel:</label>
     <div class="col">
       <input type="text" class="form-control" name="variavel" value='{{dados.variavel}}' placeholder="Nome da Variavel" aria-label="Nome da Variavel">
@@ -13,11 +18,11 @@
     <div class="col">
         <input type="text" class="form-control" name="default_variavel" value='{{dados.defal_variavel}}' placeholder="Valor Padrão da Variavel" aria-label="Valor Padrão da Variavel">
     </div>
-  </div>
+        <button type="button" class="btn btn-danger" onclick="removerCampo(this)">Remover</button>
+</div>
 {% endfor %}
-  <div class="input-group">
+</div>
 
-  </div>
     <div class="input-group mb-3">
       <label for="staticEmail" class="col-sm-2 col-form-label">Caminho de Saída</label>
       <input type="text" class="form-control" value="{{caminho_saida}}" name="caminho_saida" aria-label="Text input with checkbox">
@@ -27,9 +32,7 @@
     <input type="text" class="form-control" value="{{arquivo_saida}}" name="arquivo_saida" aria-label="Text input with checkbox">
 </div>
 <div>
-<button type="button" onclick="adicionarCampo()">Adicionar Campo</button>
-</div>
-    <div>
+<button type="button" class="btn btn-success" onclick="adicionarCampo()">Adicionar Campo</button>
         <button type="submit" class="btn btn-dark">Enviar</button>
     </div>
 </form>

@@ -105,3 +105,13 @@ def listar():
     finally:
         cursor.close()
         connection.close()
+
+def deletar(modelo_id):
+    try:
+        connection = sqlite3.connect(DB_FILE)
+        cursor = connection.cursor()
+        cursor.execute('''DELETE FROM modelos WHERE id = ?''',(modelo_id,))
+        connection.commit()
+    finally:
+        cursor.close()
+        connection.close()

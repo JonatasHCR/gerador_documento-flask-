@@ -15,7 +15,31 @@
                     <td>
                         <a href="{{ url_for('word.modelo_word',modelo_id=modelo.id) }}" class="btn btn-dark">Usar</a>
                         <a href="{{ url_for('word.modelo_word_edit',modelo_id=modelo.id) }}" class="btn btn-light">Editar</a>
-                        <a href="{{ url_for('word.modelo_word_delete',modelo_id=modelo.id) }}" class="btn btn-danger">Deletar</a>
+                        <!-- Button trigger modal -->
+<button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">
+    Deletar
+  </button>
+
+  <!-- Modal -->
+  <form action="{{ url_for('word.modelo_word_delete',modelo_id=modelo.id) }}" method="get">
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Tem certeza de que deseja excluir?</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Depois que aperta o botão não poderá desfazer essa ação deseja mesmo continuar?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Não Deletar</button>
+          <button type="submit" class="btn btn-outline-danger">Deletar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  </form>
                     </td>
                 </tr>
             {% endfor %}
