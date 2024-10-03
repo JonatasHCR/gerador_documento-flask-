@@ -14,7 +14,7 @@ Rota de Word
     -/word/<id>/delete (GET) - Deleta o registro do usuário 
 '''
 
-@word_route.route('/<int:page>')
+@word_route.route('/page=<int:page>')
 def listar_modelos_word(page):
     '''Listar os Modelos no banco de dados'''
     from sqlite3 import OperationalError
