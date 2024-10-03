@@ -18,9 +18,9 @@ function adicionarCampo() {
             <div class="col">
                 <input type="text" class="form-control" name="default_variavel"  placeholder="Valor Padrão da Variavel" aria-label="Valor Padrão da Variavel">
             </div>
-    
+            <div class="col">
             <button type="button" class="btn btn-danger" onclick="removerCampo(this)">Remover</button>
-             
+             </div>
           </div>
     `;
     
@@ -31,5 +31,5 @@ function adicionarCampo() {
 // Função para remover campos de input
 function removerCampo(botao) {
     const div = botao.parentElement;
-    div.remove();
+    div.parentElement.remove();
 }

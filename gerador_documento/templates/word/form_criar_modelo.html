@@ -4,24 +4,26 @@
 <div id="input-container" class="input-group">
     <div class="input-group mb-3">
         <label for="staticEmail" class="col-sm-2 col-form-label">Modelo</label>
-            <input type="text" class="form-control" name="nome_modelo" value="{{nome_modelo}}">
+        <input type="text" class="form-control" name="nome_modelo" value="{{nome_modelo}}">
     </div>
-{% for dados in dados_modelo %}
-<div class="row">
-    <label for="staticEmail" class="col-sm-2 col-form-label">Variavel:</label>
-    <div class="col">
-      <input type="text" class="form-control" name="variavel" value='{{dados.variavel}}' placeholder="Nome da Variavel" aria-label="Nome da Variavel">
-    </div>
-    <div class="col">
-      <input type="text" class="form-control" name="ref_variavel" value='{{dados.ref_variavel}}' placeholder="Referencia da Variavel" aria-label="Referencia da Variavel">
-    </div>
-    <div class="col">
-        <input type="text" class="form-control" name="default_variavel" value='{{dados.defal_variavel}}' placeholder="Valor Padrão da Variavel" aria-label="Valor Padrão da Variavel">
-    </div>
-        <button type="button" class="btn btn-danger" onclick="removerCampo(this)">Remover</button>
-</div>
-<br>
-{% endfor %}
+    {% for dados in dados_modelo %}
+        <div class="row">
+            <label for="staticEmail" class="col-sm-2 col-form-label">Variavel:</label>
+            <div class="col">
+                <input type="text" class="form-control" name="variavel" value='{{dados.variavel}}' placeholder="Nome da Variavel" aria-label="Nome da Variavel">
+            </div>
+            <div class="col">
+                <input type="text" class="form-control" name="ref_variavel" value='{{dados.ref_variavel}}' placeholder="Referencia da Variavel" aria-label="Referencia da Variavel">
+            </div>
+            <div class="col">
+                <input type="text" class="form-control" name="default_variavel" value='{{dados.defal_variavel}}' placeholder="Valor Padrão da Variavel" aria-label="Valor Padrão da Variavel">
+            </div>
+            <div class="col">
+                <button type="button" class="btn btn-danger" onclick="removerCampo(this)">Remover</button>
+            </div>
+        </div>
+        <br>
+    {% endfor %}
 </div>
 
     <div class="input-group mb-3">

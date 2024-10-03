@@ -1,7 +1,9 @@
-label,input{
+label{
     background-color: white;
 }
-
+div{
+    padding: 1px;
+}
 body {
     background-image: url("../imagem/fundo.jpg");
     background-size: cover; /* Faz a imagem cobrir toda a página */
