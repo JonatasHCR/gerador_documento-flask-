@@ -1,0 +1,13 @@
+label,input{
+    background-color: white;
+}
+
+body {
+    background-image: url("../imagem/fundo.jpg");
+    background-size: cover; /* Faz a imagem cobrir toda a página */
+    background-repeat: no-repeat; /* Impede que a imagem se repita */
+    background-position: center center; /* Centraliza a imagem */
+    height: 100vh; /* Altura do body ajustada a 100% da tela */
+    margin: 0;
+    padding: 0;
+}

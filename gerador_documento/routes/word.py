@@ -1,7 +1,5 @@
 from flask import Blueprint,render_template,request
 
-from database.banco import MODELOS
-
 word_route = Blueprint('word', __name__)
 
 '''
