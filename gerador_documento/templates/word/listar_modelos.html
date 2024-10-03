@@ -16,13 +16,13 @@
                         <a href="{{ url_for('word.modelo_word',modelo_id=modelo.id) }}" class="btn btn-dark">Usar</a>
                         <a href="{{ url_for('word.modelo_word_edit',modelo_id=modelo.id) }}" class="btn btn-light">Editar</a>
                         <!-- Button trigger modal -->
-<button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">
+<button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal{{modelo.id}}">
     Deletar
   </button>
 
   <!-- Modal -->
   <form action="{{ url_for('word.modelo_word_delete',modelo_id=modelo.id) }}" method="get">
-  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal fade" id="exampleModal{{modelo.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">

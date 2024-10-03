@@ -99,12 +99,10 @@ def listar(page):
         connection = sqlite3.connect(DB_FILE)
         cursor = connection.cursor()
         page = int(page)
-        itens_por_page = 7
+        itens_por_page = 15
         offset = (page - 1) * itens_por_page
-        print( page, offset, sep='\n')
-        cursor.execute('SELECT id,name FROM modelos LIMIT ? OFFSET ?',(itens_por_page, offset,))
+        cursor.execute('SELECT id,name FROM modelos ORDER BY id ASC LIMIT ? OFFSET ?',(itens_por_page, offset,))
         resultado = cursor.fetchall()
-        print(resultado)
         cursor.execute('SELECT COUNT(*) FROM modelos')
         total_itens = cursor.fetchone()[0]
 
@@ -145,6 +143,7 @@ def update():
         for coluna in novas_colunas:
             if coluna not in colunas_existentes:
                 cursor.execute(f"ALTER TABLE {tabela} ADD COLUMN {coluna} {tipo_coluna}")
+                cursor.execute(f'UPDATE {tabela} SET {coluna} = ?', (' ',))
                 connection.commit()
     finally:
         # Fechando a conexão
@@ -173,13 +172,12 @@ def retirar_dados_campo(id, campo):
         cursor = connection.cursor()
         cursor.execute(f'SELECT {campo} FROM modelos WHERE id = ?',( id,))
         resultado = cursor.fetchone()
-        for valor in resultado:
-            try:
-                dados_campo = json.loads(valor[0])
-                return dados_campo
-            except json.JSONDecodeError: 
-                dados_campo = valor[0]
-                return dados_campo
+        try:
+            dados_campo = json.loads(resultado[0])
+            return dados_campo
+        except json.JSONDecodeError: 
+            dados_campo = resultado[0]
+            return dados_campo
     finally:
         cursor.close()
         connection.close()

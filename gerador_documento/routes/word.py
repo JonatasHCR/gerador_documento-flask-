@@ -124,7 +124,7 @@ def modelo_word_edit(modelo_id):
             rename(nome_antigo, nome_novo)
         except UnboundLocalError:
             return render_template('word/form_criar_modelo.html', mensagem_error='O modelo não existe(não foi possível concluir a operação de renomear)')
-        return listar_modelos_word()
+        return listar_modelos_word(1)
     from functions.func_db_modelo import retirar_dados
     
     dados = retirar_dados(modelo_id)
@@ -150,5 +150,5 @@ def modelo_word_delete(modelo_id):
         return render_template('word/listar_modelos.html', mensagem_error='O modelo não existe na pasta modelo(não foi possível concluir a operação de apagar)')
     except UnboundLocalError:
         return render_template('word/listar_modelos.html', mensagem_error='O modelo não existe no banco(não foi possível concluir a operação de apagar)')
-    return listar_modelos_word()
+    return listar_modelos_word(1)
 
