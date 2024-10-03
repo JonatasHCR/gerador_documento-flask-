@@ -14,19 +14,22 @@ Rota de Word
     -/word/<id>/delete (GET) - Deleta o registro do usuário 
 '''
 
-@word_route.route('/')
-def listar_modelos_word():
+@word_route.route('/<int:page>')
+def listar_modelos_word(page):
     '''Listar os Modelos no banco de dados'''
     from sqlite3 import OperationalError
 
     from functions.func_db_modelo import listar
+
     try:
-        modelos = listar()
-        if modelos == []:
+        modelos = listar(page)
+        total_pages = [n for n in range(1,modelos[1]+1)]
+        ultima_pagina = total_pages[-1]
+        if modelos[0] == []:
             raise OperationalError
     except OperationalError:
         return render_template('word/listar_modelos.html', mensagem_error='Você ainda nao criou um modelo')
-    return render_template('word/listar_modelos.html', modelos_word=modelos)
+    return render_template('word/listar_modelos.html', modelos_word=modelos[0], page=page, total_pages= total_pages, ultima_pagina= ultima_pagina)
 
 @word_route.route('/novo_modelo', methods=['POST', 'GET'])
 def form_modelo_word():
@@ -60,29 +63,34 @@ def form_modelo_word():
             return render_template('word/form_criar_modelo.html', mensagem_error='Já existe um modelo com esse nome')
     return render_template('word/form_criar_modelo.html')
 
-@word_route.route('/<int:modelo_id>')
+@word_route.route('/<int:modelo_id>', methods=['POST', 'GET'])
 def modelo_word(modelo_id):
     '''Formulário do modelo criado'''
+    if request.method == 'POST':
+        '''Recebendo dados do formulário do modelo'''
+        from functions.formatando_dados import FormatAll
+        from functions.alterando_documento import gerando_documento
+        from functions.func_db_modelo import dados_anterior,retirar_dados_campo
+
+        
+        dados = request.values.items()
+        dados_filtro = []
+        ref_dados = retirar_dados_campo(modelo_id,'variaveis')
+        for chave,valor in dados:
+            if chave in ref_dados:
+                dados_filtro.append(valor)
+        dados_anterior(modelo_id,dados_filtro)
+        dados_formatados = FormatAll(request.values.items())
+        try:
+            gerando_documento(dados_formatados.dados_dict.items())
+        except FileNotFoundError:
+            return render_template('word/form_modelo.html', mensagem_error='O modelo ou o caminho do arquivo de saída não existem(não foi possível concluir a operação)')
+
     from functions.func_db_modelo import retirar_dados
     
     dados = retirar_dados(modelo_id)
     combinadas = [{'variavel': dados[2][i], 'ref_variavel': dados[3][i], 'defal_variavel': dados[4][i]} for i in range(len(dados[2]))]
     return render_template('word/form_modelo.html', dados_modelo=combinadas, id_modelo=dados[0], nome_modelo=dados[1], caminho_saida=dados[5], arquivo_saida=dados[6])
-
-
-@word_route.route('/<int:modelo_id>', methods=['POST'])
-def form_dados_word(modelo_id):
-    '''Recebendo dados do formulário do modelo'''
-    from functions.formatando_dados import FormatAll
-    from functions.alterando_documento import gerando_documento
-
-    dados_formatados = FormatAll(request.values.items())
-    try:
-        gerando_documento(dados_formatados.dados_dict.items())
-    except FileNotFoundError:
-        return render_template('word/form_modelo.html', mensagem_error='O modelo ou o caminho do arquivo de saída não existem(não foi possível concluir a operação)')
-
-    return modelo_word(modelo_id)
 
 @word_route.route('/<int:modelo_id>/edit', methods=['POST', 'GET'])
 def modelo_word_edit(modelo_id):
@@ -90,11 +98,11 @@ def modelo_word_edit(modelo_id):
     if request.method == 'POST':
         from pathlib import Path
         
-        from functions.func_db_modelo import retirar_dados
+        from functions.func_db_modelo import retirar_dados_campo
 
         CAMINHO_MODELO = Path(__file__).cwd() / 'gerador_documento' / 'database' / 'modelos'
         
-        dados = retirar_dados(modelo_id)
+        nome_modelo = retirar_dados_campo(modelo_id, 'name')
         
         nome_novo = request.values.get('nome_modelo')
         variaveis = request.values.getlist('variavel')
@@ -110,7 +118,7 @@ def modelo_word_edit(modelo_id):
         try:
             from os import rename
 
-            nome_antigo = CAMINHO_MODELO / dados[1]
+            nome_antigo = CAMINHO_MODELO / nome_modelo
             nome_novo = CAMINHO_MODELO / nome_novo
             # Verifica se o arquivo existe
             rename(nome_antigo, nome_novo)
@@ -132,10 +140,10 @@ def modelo_word_delete(modelo_id):
         
         CAMINHO_MODELO = Path(__file__).cwd() / 'gerador_documento' / 'database' / 'modelos'
         
-        from functions.func_db_modelo import deletar,retirar_dados
+        from functions.func_db_modelo import deletar,retirar_dados_campo
         
-        dados = retirar_dados(modelo_id)
-        caminho_arquivo = CAMINHO_MODELO / dados[1]
+        dados = retirar_dados_campo(modelo_id,'name')
+        caminho_arquivo = CAMINHO_MODELO / dados
         deletar(modelo_id)
         remove(caminho_arquivo)
     except FileNotFoundError:

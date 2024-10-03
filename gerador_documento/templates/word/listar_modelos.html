@@ -45,6 +45,15 @@
             {% endfor %}
         </tbody>
     </table>
+    <nav aria-label="Page navigation example">
+      <ul class="pagination">
+        {% if not page == 1 %}<li class="page-item"><a class="page-link" href="{{url_for('word.listar_modelos_word', page = page - 1)}}">Anterior</a></li>{% endif %}
+        {% for pagina in total_pages %}
+        <li class="page-item"><a class="page-link" href="{{url_for('word.listar_modelos_word', page = pagina)}}">{{pagina}}</a></li>
+        {% endfor %}
+        {% if not page == ultima_pagina %}<li class="page-item"><a class="page-link" href="{{url_for('word.listar_modelos_word', page = page + 1)}}">Próxima</a></li>{% endif %}
+      </ul>
+    </nav>
     {% else %}
     <div></div>
         <div class="alert alert-danger d-flex align-items-center" role="alert">

@@ -1,7 +1,7 @@
 {% include "partials/head.html" %}
 
 {% if not mensagem_error %}
-<form action="{{ url_for('word.form_dados_word', modelo_id = id_modelo)}}" method="post">
+<form action="{{ url_for('word.modelo_word', modelo_id = id_modelo)}}" method="post">
     <div class="mb-3 row">
         <label for="staticEmail" class="col-sm-2 col-form-label">Modelo</label>
         <div class="col-sm-10">

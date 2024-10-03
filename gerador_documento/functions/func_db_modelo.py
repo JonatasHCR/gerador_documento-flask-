@@ -11,27 +11,30 @@ DB_FILE = ROOT_DIR / DB_NAME
 def criar_banco():
     '''Criar o banco de dados para armazenar as informações do modelo'''
     try:
-        connection = sqlite3.connect(DB_FILE)
-        cursor = connection.cursor()
+        update()
+    except (UnboundLocalError,sqlite3.OperationalError):
+        try:
+            connection = sqlite3.connect(DB_FILE)
+            cursor = connection.cursor()
 
-        # SQL
-        cursor.execute(
-            f'CREATE TABLE IF NOT EXISTS modelos'
-            '('
-            'id INTEGER PRIMARY KEY AUTOINCREMENT,'
-            'name TEXT UNIQUE NOT NULL,'
-            'variaveis TEXT,'
-            'ref_variaveis TEXT,'
-            'default_variaveis TEXT,'
-            'caminho_saida TEXT,'
-            'arquivo_saida TEXT'
-            ')'
-        )
-        connection.commit()
-    finally:
-        """Garantir que a função sempre feche a conexão"""
-        cursor.close()
-        connection.close()
+            # SQL
+            cursor.execute(
+                f'CREATE TABLE IF NOT EXISTS modelos'
+                '('
+                'id INTEGER PRIMARY KEY AUTOINCREMENT,'
+                'name TEXT UNIQUE NOT NULL,'
+                'variaveis TEXT,'
+                'ref_variaveis TEXT,'
+                'default_variaveis TEXT,'
+                'caminho_saida TEXT,'
+                'arquivo_saida TEXT'
+                ')'
+            )
+            connection.commit()
+        finally:
+            """Garantir que a função sempre feche a conexão"""
+            cursor.close()
+            connection.close()
 
 def inserir(nome,dados,ref_dados,default_var,caminho_saida,arquivo_saida):
     '''função para inserir os dados no banco'''
@@ -91,17 +94,26 @@ def modificar(id,dados,ref_dados,default_var,nome_novo,caminho_saida,arquivo_sai
         cursor.close()
         connection.close()
 
-def listar():
+def listar(page):
     try:
         connection = sqlite3.connect(DB_FILE)
         cursor = connection.cursor()
-        cursor.execute('SELECT id,name FROM modelos')
+        page = int(page)
+        itens_por_page = 7
+        offset = (page - 1) * itens_por_page
+        print( page, offset, sep='\n')
+        cursor.execute('SELECT id,name FROM modelos LIMIT ? OFFSET ?',(itens_por_page, offset,))
         resultado = cursor.fetchall()
+        print(resultado)
+        cursor.execute('SELECT COUNT(*) FROM modelos')
+        total_itens = cursor.fetchone()[0]
+
+        total_pages = (total_itens + itens_por_page - 1) // itens_por_page
         modelos = []
         for modelo in resultado:
             modelos.append({'id': modelo[0],'nome': modelo[1]})
         
-        return modelos
+        return [modelos,total_pages]
     finally:
         cursor.close()
         connection.close()
@@ -112,6 +124,62 @@ def deletar(modelo_id):
         cursor = connection.cursor()
         cursor.execute('''DELETE FROM modelos WHERE id = ?''',(modelo_id,))
         connection.commit()
+    finally:
+        cursor.close()
+        connection.close()
+
+def update():
+    # Nome da tabela e da coluna que você deseja adicionar
+    tabela = 'modelos'
+    novas_colunas = ('caminho_saida', 'arquivo_saida')
+    tipo_coluna = 'TEXT'
+
+    # Verificando se a coluna já existe
+    try:
+        connection = sqlite3.connect(DB_FILE)
+        cursor = connection.cursor()
+        cursor.execute(f"PRAGMA table_info({tabela})")
+        colunas_existentes = [coluna[1] for coluna in cursor.fetchall()]
+
+        # Se a coluna não existir, adicione-a
+        for coluna in novas_colunas:
+            if coluna not in colunas_existentes:
+                cursor.execute(f"ALTER TABLE {tabela} ADD COLUMN {coluna} {tipo_coluna}")
+                connection.commit()
+    finally:
+        # Fechando a conexão
+        cursor.close()
+        connection.close()
+
+def dados_anterior(id,dados):
+    try:
+        connection = sqlite3.connect(DB_FILE)
+        cursor = connection.cursor()
+        lista_convert_dados = json.dumps(dados)
+        cursor.execute('''
+        UPDATE modelos
+        SET default_variaveis = ?
+        WHERE id = ?;
+    ''', (lista_convert_dados,id)
+        )
+        connection.commit()
+    finally:
+        cursor.close()
+        connection.close()
+
+def retirar_dados_campo(id, campo):
+    try:
+        connection = sqlite3.connect(DB_FILE)
+        cursor = connection.cursor()
+        cursor.execute(f'SELECT {campo} FROM modelos WHERE id = ?',( id,))
+        resultado = cursor.fetchone()
+        for valor in resultado:
+            try:
+                dados_campo = json.loads(valor[0])
+                return dados_campo
+            except json.JSONDecodeError: 
+                dados_campo = valor[0]
+                return dados_campo
     finally:
         cursor.close()
         connection.close()
